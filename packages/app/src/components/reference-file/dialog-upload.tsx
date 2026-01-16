@@ -25,8 +25,9 @@ const ACCEPTED_FILE_TYPES = [
   ".md",
 ]
 
-const MAX_FILE_SIZE = 100 * 1024 * 1024
-const MAX_FILE_COUNT = 10
+const MAX_FILE_SIZE_MB = 50
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
+const MAX_FILE_COUNT = 1
 
 export function DialogUpload({ onSuccess }: { onSuccess?: () => void }) {
   let fileInputRef!: HTMLInputElement
@@ -43,7 +44,7 @@ export function DialogUpload({ onSuccess }: { onSuccess?: () => void }) {
     files.forEach((file) => {
       if (file.size > MAX_FILE_SIZE) {
         showToast({
-          description: `文件大小超过${MAX_FILE_SIZE / 1024 / 1024}MB`,
+          description: `文件大小超过${MAX_FILE_SIZE_MB}MB`,
           variant: "error",
         })
         valid = false
@@ -52,7 +53,7 @@ export function DialogUpload({ onSuccess }: { onSuccess?: () => void }) {
     })
     if (totalSize > MAX_FILE_SIZE) {
       showToast({
-        description: `文件大小超过${MAX_FILE_SIZE / 1024 / 1024}MB`,
+        description: `文件大小超过${MAX_FILE_SIZE_MB}MB`,
         variant: "error",
       })
       valid = false
@@ -111,9 +112,9 @@ export function DialogUpload({ onSuccess }: { onSuccess?: () => void }) {
       <div class="p-4">
         <input
           type="file"
-          multiple
-          ref={fileInputRef}
           class="hidden"
+          ref={fileInputRef}
+          multiple={MAX_FILE_COUNT > 1}
           accept={ACCEPTED_FILE_TYPES.join(",")}
           onChange={(e) => {
             const files = e.currentTarget.files
@@ -124,23 +125,23 @@ export function DialogUpload({ onSuccess }: { onSuccess?: () => void }) {
 
         <div class="flex flex-col justify-center items-center">
           <Show when={hasFiles()}>
-            <div class="flex flex-col w-full mb-1 border border-border-base rounded-md p-2">
-              <p>
+            <div class="flex flex-col w-full mb-1 rounded-md p-2">
+              {/* <p>
                 已选择 <span class="text-text-strong">{selectedFiles().length}</span> 个文件
-              </p>
+              </p> */}
               <div class="flex-1 flex flex-col mt-1">
                 <For each={selectedFiles()}>
                   {(file) => (
-                    <div class="flex-1 flex items-center gap-2 hover:bg-surface-raised-base-hover rounded-md group">
-                      <FileIcon node={{ path: file.name, type: "file" }} class="shrink-0 size-4" />
+                    <div class="flex-1 flex items-center gap-2 hover:bg-surface-raised-base-hover rounded-md group py-1 px-1">
+                      <FileIcon node={{ path: file.name, type: "file" }} class="shrink-0 size-5" />
                       <span
-                        class="text-text-strong whitespace-nowrap flex-1 text-ellipsis overflow-hidden"
+                        class="text-text-strong text-14-medium whitespace-nowrap flex-1 text-ellipsis overflow-hidden"
                         style={{ "max-width": "380px" }}
                         title={file.name}
                       >
                         {file.name}
                       </span>
-                      <span class="text-text-weak text-12-regular">{formatFileSize(file.size)}</span>
+                      <span class="text-text-weak text-14-regular">{formatFileSize(file.size)}</span>
                       <IconButton
                         icon="close"
                         variant="ghost"
@@ -153,15 +154,19 @@ export function DialogUpload({ onSuccess }: { onSuccess?: () => void }) {
               </div>
             </div>
           </Show>
-          <div class="w-full mt-2 flex justify-center">
-            <Button size="large" variant="secondary" onClick={() => fileInputRef.click()}>
-              选择文件
-            </Button>
-          </div>
+          <Show when={!hasFiles()}>
+            <div class="w-full mt-2 flex justify-center">
+              <Button size="large" variant="secondary" onClick={() => fileInputRef.click()}>
+                选择文件
+              </Button>
+            </div>
+          </Show>
           <div class="w-full">
             <div class="text-text-base mt-4">
               <span>支持的文件大小：</span>
-              <span>单文件不超过100MB，最多10个文件</span>
+              <span>
+                单文件不超过{MAX_FILE_SIZE_MB}MB，最多{MAX_FILE_COUNT}个文件
+              </span>
             </div>
             <div class="text-text-base mt-1">
               <span>支持的文件类型：</span>

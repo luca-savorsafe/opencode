@@ -74,6 +74,11 @@ export function ReferenceFileList() {
             </div>
           </div>
         </Show>
+        <Show when={!hasFiles()}>
+          <div class="w-full pt-6 flex justify-center items-center">
+            <p class="text-14-medium text-text-weak">当前没有参考文档~~</p>
+          </div>
+        </Show>
       </div>
     </div>
   )

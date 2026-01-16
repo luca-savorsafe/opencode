@@ -10,36 +10,40 @@ const getDirectory = (directory: string) => {
 
 export const ReferenceFileRoute = new Hono()
   .get("/", async (c) => {
-    const directory = c.req.query("directory")
-    if (!directory) {
-      return c.json({ error: "Directory is required" }, 400)
-    }
+    try {
+      const directory = c.req.query("directory")
+      if (!directory) {
+        return c.json({ error: "Directory is required" }, 400)
+      }
 
-    const referencePath = getDirectory(directory)
-    // 按上传时间排序，倒序
-    const files = (fs.readdirSync(referencePath) || [])
-      .sort((a, b) => {
-        return (
-          fs.statSync(path.join(referencePath, b)).mtime.getTime() -
-          fs.statSync(path.join(referencePath, a)).mtime.getTime()
-        )
-      })
-      .map((file) => {
-        const stats = fs.statSync(path.join(referencePath, file))
-        return {
-          name: file,
-          size: stats.size,
-          createdAt: stats.mtime.getTime(),
-        }
-      })
-    return c.json({ files })
+      const referencePath = getDirectory(directory)
+      // 按上传时间排序，倒序
+      const files = (fs.readdirSync(referencePath) || [])
+        .sort((a, b) => {
+          return (
+            fs.statSync(path.join(referencePath, b)).mtime.getTime() -
+            fs.statSync(path.join(referencePath, a)).mtime.getTime()
+          )
+        })
+        .map((file) => {
+          const stats = fs.statSync(path.join(referencePath, file))
+          return {
+            name: file,
+            size: stats.size,
+            createdAt: stats.mtime.getTime(),
+          }
+        })
+      return c.json({ files })
+    } catch (error) {
+      return c.json({ files: [] }, 200)
+    }
   })
   .post(
     "/upload",
     bodyLimit({
-      maxSize: 100 * 1024 * 1024, // 100mb
+      maxSize: 50 * 1024 * 1024, // 50mb
       onError: (c) => {
-        return c.text("overflow :(", 413)
+        return c.json({ error: "File size exceeds the limit" }, 400)
       },
     }),
     async (c) => {
