@@ -672,6 +672,10 @@ export default function Layout(props: ParentProps) {
     else navigate("/")
   }
 
+  function manageReferenceFile() {
+    navigate(`/${params.dir ?? ""}/reference-file`)
+  }
+
   async function chooseProject() {
     function resolve(result: string | string[] | null) {
       if (Array.isArray(result)) {
@@ -1201,6 +1205,30 @@ export default function Layout(props: ParentProps) {
               </Tooltip>
             </Match>
           </Switch>
+          <Show when={!!params.dir}>
+            <Tooltip
+              placement="right"
+              value={
+                <div class="flex items-center gap-2">
+                  <span>Open project</span>
+                  <Show when={!sidebarProps.mobile}>
+                    <span class="text-icon-base text-12-medium">{command.keybind("project.add-docs")}</span>
+                  </Show>
+                </div>
+              }
+              inactive={expanded()}
+            >
+              <Button
+                class="flex w-full text-left justify-start text-text-base stroke-[1.5px] rounded-lg px-2"
+                variant="ghost"
+                size="large"
+                icon="folder"
+                onClick={manageReferenceFile}
+              >
+                <Show when={expanded()}>参考文档管理</Show>
+              </Button>
+            </Tooltip>
+          </Show>
           <Tooltip
             placement="right"
             value={

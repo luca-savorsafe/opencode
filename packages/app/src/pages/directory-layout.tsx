@@ -4,6 +4,8 @@ import { SDKProvider, useSDK } from "@/context/sdk"
 import { SyncProvider, useSync } from "@/context/sync"
 import { LocalProvider } from "@/context/local"
 
+import { CustomSyncProvider, useCustomSync, CustomSDKProvider, useCustomSDK } from "@/context/custom"
+
 import { base64Decode } from "@opencode-ai/util/encode"
 import { DataProvider } from "@opencode-ai/ui/context"
 import { iife } from "@opencode-ai/util/iife"
@@ -18,39 +20,43 @@ export default function Layout(props: ParentProps) {
   return (
     <Show when={params.dir} keyed>
       <SDKProvider directory={directory()}>
-        <SyncProvider>
-          {iife(() => {
-            const sync = useSync()
-            const sdk = useSDK()
-            const respond = (input: {
-              sessionID: string
-              permissionID: string
-              response: "once" | "always" | "reject"
-            }) => sdk.client.permission.respond(input)
+        <CustomSDKProvider>
+          <SyncProvider>
+            {iife(() => {
+              const sync = useSync()
+              const sdk = useSDK()
+              const respond = (input: {
+                sessionID: string
+                permissionID: string
+                response: "once" | "always" | "reject"
+              }) => sdk.client.permission.respond(input)
 
-            const replyToQuestion = (input: { requestID: string; answers: QuestionAnswer[] }) =>
-              sdk.client.question.reply(input)
+              const replyToQuestion = (input: { requestID: string; answers: QuestionAnswer[] }) =>
+                sdk.client.question.reply(input)
 
-            const rejectQuestion = (input: { requestID: string }) => sdk.client.question.reject(input)
+              const rejectQuestion = (input: { requestID: string }) => sdk.client.question.reject(input)
 
-            const navigateToSession = (sessionID: string) => {
-              navigate(`/${params.dir}/session/${sessionID}`)
-            }
+              const navigateToSession = (sessionID: string) => {
+                navigate(`/${params.dir}/session/${sessionID}`)
+              }
 
-            return (
-              <DataProvider
-                data={sync.data}
-                directory={directory()}
-                onPermissionRespond={respond}
-                onQuestionReply={replyToQuestion}
-                onQuestionReject={rejectQuestion}
-                onNavigateToSession={navigateToSession}
-              >
-                <LocalProvider>{props.children}</LocalProvider>
-              </DataProvider>
-            )
-          })}
-        </SyncProvider>
+              return (
+                <CustomSyncProvider>
+                  <DataProvider
+                    data={sync.data}
+                    directory={directory()}
+                    onPermissionRespond={respond}
+                    onQuestionReply={replyToQuestion}
+                    onQuestionReject={rejectQuestion}
+                    onNavigateToSession={navigateToSession}
+                  >
+                    <LocalProvider>{props.children}</LocalProvider>
+                  </DataProvider>
+                </CustomSyncProvider>
+              )
+            })}
+          </SyncProvider>
+        </CustomSDKProvider>
       </SDKProvider>
     </Show>
   )
