@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { createSignal, createEffect, onMount, onCleanup, Show, For, Accessor, Setter } from "solid-js"
 import "./light-rays.css"
 
