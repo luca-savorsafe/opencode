@@ -1,5 +1,5 @@
 import { OpencodeClient } from "./sdk.gen.js"
-import { Client } from "./client/types.gen.js"
+import { type Client } from "./client/types.gen.js"
 import { buildClientParams, type Options } from "./client/index.js"
 
 export class ReferenceFile extends OpencodeClient {

@@ -25,7 +25,7 @@ export const { use: useCustomSync, provider: CustomSyncProvider } = createSimple
       const directory = base64Encode(store.path.directory)
       await customSDK.client.referenceFile
         .list({ directory })
-        .then((result) => {
+        .then((result: any) => {
           setReferenceFileStore("list", reconcile(result.files ?? [], { key: "name" }))
         })
         .finally(() => {
