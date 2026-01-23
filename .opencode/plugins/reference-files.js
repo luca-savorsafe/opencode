@@ -172,10 +172,9 @@ var getRoutes = () => {
 // ../../packages/server/index.ts
 var MAX_RETRIES = 5
 var RETRY_DELAY_MS = 500
-var SERVER_PORT = 40960
 async function startServer(options) {
   const { origin, htmlContent, onReady } = options
-  const configuredPort = SERVER_PORT
+  const configuredPort = Math.floor(Math.random() * 1e4) + 20000
   let resolveDecision
   const decisionPromise = new Promise((resolve) => {
     resolveDecision = resolve
