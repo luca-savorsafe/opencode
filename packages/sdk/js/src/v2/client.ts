@@ -30,5 +30,3 @@ export function createOpencodeClient(config?: Config & { directory?: string }) {
   const client = createClient(config)
   return new OpencodeClient({ client })
 }
-
-export { createCustomClient } from "./custom-client.js"
