@@ -62,8 +62,6 @@ import { DialogEditProject } from "@/components/dialog-edit-project"
 import { Titlebar } from "@/components/titlebar"
 import { useServer } from "@/context/server"
 
-import { FileAddButton } from "@/components/reference-file"
-
 export default function Layout(props: ParentProps) {
   const [store, setStore, , ready] = persisted(
     Persist.global("layout", ["layout.v6"]),
@@ -1344,9 +1342,6 @@ export default function Layout(props: ParentProps) {
             </DragDropProvider>
           </div>
           <div class="shrink-0 w-full pt-3 pb-3 flex flex-col items-center gap-2">
-            <Show when={project()?.worktree}>
-              <FileAddButton directory={project()?.worktree!} />
-            </Show>
             <Tooltip placement={sidebarProps.mobile ? "bottom" : "right"} value="Settings">
               <IconButton disabled icon="settings-gear" variant="ghost" size="large" />
             </Tooltip>
